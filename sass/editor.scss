@@ -1,0 +1,81 @@
+.container {
+    display: flex;
+    flex-direction: row;
+
+    &__right {
+        display: flex;
+        width: 70%;
+        flex-direction: column;
+        padding-top: 1rem;
+
+        .nav-button {
+            margin-bottom: 1rem;
+
+            &--item {
+                align-items: center;
+                margin-top: 1.55rem;
+                display: inline-block;
+                font-weight: bold;
+                padding: 0.5rem 1rem;
+                color: white;
+                background-color: var(--secondary-color);
+                border-radius: 15px;
+                cursor: pointer;
+                transition: 0.15s;
+                margin-right: 1rem;
+                border: 2px solid var(--secondary-color);
+
+                p {
+                    color: white;
+                }
+
+                &:hover {
+                    background-color: white;
+                    border: 2px solid var(--secondary-color);
+
+                    p {
+                        color: var(--secondary-color);
+                    }
+                }
+            }
+        }
+
+        .editor {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+         
+            .document-title-input {
+                padding: 1rem;
+                padding-left: 0;
+
+                input {
+                    border: none;
+                    outline: none;
+                    font-size: 1.25rem;
+                }
+            }
+            
+            #toolbar-container {
+                width: 100%;
+            }
+                   
+            #editor {
+                border: 2px solid var(--lighter-primary-color);
+                height: 100%;
+                width: 100%;
+            }
+        }
+  
+        @media screen and (max-width: 700px) {
+            width: 100%;
+        }
+    }
+
+    &__left {
+        .app-title {
+            white-space: nowrap;
+        }
+    }
+}

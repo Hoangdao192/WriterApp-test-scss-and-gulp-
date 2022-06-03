@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a914f93d25.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="toast.css">
+    <title>Writer App</title>
+</head>
+
+<body>
+    <div class="toast"></div>
+    <div class="pop-up-container">
+        <div class="pop-up-background">
+        </div>
+        <div class="pop-up-item">
+            <div class="pop-up-item__document-title">
+                <p>Hello</p>
+            </div>
+            <div class="pop-up-item__content">
+                Hello I âmjsjajsjkasjk
+            </div>
+            <div class="pop-up-item__close">
+                <p>Close</p>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="container__left">
+            <div class="close-sidebar">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div class="app-title">
+                <h1>Writer App</h1>
+            </div>
+            <div class="recent-document">
+                <div class="recent-document__title">
+                    <h4>Recent</h4>
+                </div>
+                <div class="recent-document__container">
+                    <div class="recent-document__item">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <p class="recent-document__item__title">
+                            document_1
+                        </p>
+                    </div>
+                    <div class="recent-document__item">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <p class="recent-document__item__title">
+                            document_2
+                        </p>
+                    </div>
+                    <div class="recent-document__item">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <p class="recent-document__item__title">
+                            document_3
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="app-setting">
+                <div class="app-setting__item">
+                    <i class="fa-solid fa-gear"></i>
+                    <p class="app-setting__item__title">
+                        Setting
+                    </p>
+                </div>
+                <div class="app-setting__item">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p class="app-setting__item__title">
+                        About
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="container__right">
+            <div class="top-bar">
+                <div class="open-sidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+                <div class="app-title">
+                    <h1>Writer App</h1>
+                </div>
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+            <div class="page-select">
+                <div class="page-select__item page-select__item--active page-select__all">
+                    <p>All</p>
+                </div>
+                <div class="page-select__item page-select__favorite">
+                    <p>Favorite</p>
+                </div>
+            </div>
+            <div class="new-document">
+                <p>Create new</p>
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <div class="document-container">
+            </div>
+        </div>
+    </div>
+</body>
+<script src="js/script.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/documentManager.js"></script>
+<script>
+    loadAllDocument();
+    loadRecentDocumentTitle()
+
+    let allDocumentButton = document.querySelector(".page-select__all");
+    let favoriteDocumentButton = document.querySelector(".page-select__favorite");
+
+    allDocumentButton.addEventListener('click', function() {
+        if (!allDocumentButton.classList.contains("page-select__item--active")) {
+            allDocumentButton.classList.add("page-select__item--active")
+        }
+        if (favoriteDocumentButton.classList.contains("page-select__item--active")) {
+            favoriteDocumentButton.classList.remove("page-select__item--active")
+        }
+        loadAllDocument()
+    })
+
+    favoriteDocumentButton.addEventListener('click', function(){
+        if (!favoriteDocumentButton.classList.contains("page-select__item--active")) {
+            favoriteDocumentButton.classList.add("page-select__item--active")
+        }
+        if (allDocumentButton.classList.contains("page-select__item--active")) {
+            allDocumentButton.classList.remove("page-select__item--active")
+        }
+        loadAllFavoriteDocument()
+    })
+
+    let popupContainer = document.querySelector(".pop-up-container")
+    let closePopup = document.querySelector(".pop-up-item__close");
+    closePopup.addEventListener('click', function(){
+        popupContainer.style.display = "none"
+    })
+
+    function loadRecentDocumentTitle() {
+        let documentArray = getAllDocumentOrderByLastModified()
+        let recentDocumentContainer = document.querySelector(".recent-document__container")
+        recentDocumentContainer.innerHTML = ""
+        for (let i = 0; i < documentArray.length; ++i) {
+            if (i > 2) break
+            let recentDocumentItem = document.createElement('div')
+            recentDocumentItem.classList.add("recent-document__item")
+            recentDocumentItem.innerHTML =
+                `<i class="fa-solid fa-file-lines"></i>
+                <p class="recent-document__item__title">
+                    ${documentArray[i].documentName}
+                </p>`
+
+            recentDocumentItem.addEventListener('click', function(){
+                openDocument(documentArray[i].documentId)
+            })
+            recentDocumentContainer.appendChild(recentDocumentItem)
+        }
+    }
+
+    function loadAllFavoriteDocument() {
+        let documentArray = getAllFavoriteDocument();
+        let documentContainer = document.querySelector(".document-container");
+        documentContainer.innerHTML = "";
+        for (let i = 0; i < documentArray.length; ++i) {
+            let documentInformation = documentArray[i];
+            let documentItem = document.createElement("div");
+            documentItem.classList.add("document-item");
+
+            let date = new Date();
+            date.setTime(documentInformation.lastModified)
+            let options = {  
+                weekday: "long", year: "numeric", month: "short",  
+                day: "numeric", hour: "2-digit", minute: "2-digit"  
+            };  
+            let lastModified = date.toLocaleTimeString("en-us", options) 
+
+            documentItem.innerHTML = 
+                `<div class="document-item__title">
+                    <p>${documentInformation.documentName}</p>
+                </div>
+                <div class="document-item__modify-date">
+                    <p>${lastModified}</p>
+                </div>
+                <div class="document-item__tool">
+                    <div class="document-item__tool--item document-item__tool__view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <div class="document-item__tool--item document-item__tool__open">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <div class="document-item__tool--item document-item__tool__unfavorite">
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <div class="document-item__tool--item document-item__tool__download">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                    </div>
+                </div>`
+            let removeFavoriteButton = documentItem.querySelector(".document-item__tool__unfavorite")
+            removeFavoriteButton.addEventListener('click', function(){
+                deleteFromFavorite(documentInformation.documentId)
+                createToastMessage("Removed from favorite list")
+                loadAllFavoriteDocument()
+            })
+
+            let viewDocumentButton = documentItem.querySelector(".document-item__tool__view");
+            viewDocumentButton.addEventListener('click', function(){
+                viewDocument(documentInformation)
+            })
+            documentContainer.appendChild(documentItem);
+
+            let openDocumentButton = documentItem.querySelector(".document-item__tool__open");
+            openDocumentButton.addEventListener('click', function(){
+                openDocument(documentInformation.documentId)
+            })
+
+            let downloadDocumentButton = documentItem.querySelector(".document-item__tool__download");
+            downloadDocumentButton.addEventListener('click', function(){
+                downloadDocument(documentInformation.documentId)
+            })
+        }
+    }
+
+    function loadAllDocument() {
+        let documentArray = getAllDocument();
+        let documentContainer = document.querySelector(".document-container");
+        documentContainer.innerHTML = "";
+        for (let i = 0; i < documentArray.length; ++i) {
+            let documentInformation = documentArray[i];
+            let documentItem = document.createElement("div");
+
+            let date = new Date();
+            date.setTime(documentInformation.lastModified)
+            let options = {  
+                weekday: "long", year: "numeric", month: "short",  
+                day: "numeric", hour: "2-digit", minute: "2-digit"  
+            };  
+            let lastModified = date.toLocaleTimeString("en-us", options) 
+
+            documentItem.classList.add("document-item");
+            documentItem.innerHTML = 
+                `<div class="document-item__title">
+                    <p>${documentInformation.documentName}</p>
+                </div>
+                <div class="document-item__modify-date">
+                    <p>${lastModified}</p>
+                </div>
+                <div class="document-item__tool">
+                    <div class="document-item__tool--item document-item__tool__view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <div class="document-item__tool--item document-item__tool__open">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <div class="document-item__tool--item document-item__tool__favorite">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="document-item__tool--item document-item__tool__download">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                    </div>
+                    <div class="document-item__tool--item document-item__tool__delete">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+                </div>`
+            let addToFavoriteButton = documentItem.querySelector(".document-item__tool__favorite")
+            addToFavoriteButton.addEventListener('click', function(){
+                addToFavorite(documentInformation.documentId)
+                createToastMessage("Added to favorite")
+            })
+
+            let viewDocumentButton = documentItem.querySelector(".document-item__tool__view");
+            viewDocumentButton.addEventListener('click', function(){
+                viewDocument(documentInformation)
+            })
+            documentContainer.appendChild(documentItem);
+
+            let openDocumentButton = documentItem.querySelector(".document-item__tool__open");
+            openDocumentButton.addEventListener('click', function(){
+                openDocument(documentInformation.documentId)
+            })
+
+            let downloadDocumentButton = documentItem.querySelector(".document-item__tool__download");
+            downloadDocumentButton.addEventListener('click', function(){
+                downloadDocument(documentInformation.documentId)
+            })
+
+            let deleteDocumentButton = documentItem.querySelector(".document-item__tool__delete");
+            deleteDocumentButton.addEventListener('click', function(){
+                deleteDocument(documentInformation.documentId)
+                setTimeout(function(){
+                    loadAllDocument()
+                    loadRecentDocumentTitle()
+                }, 100)
+                
+            })
+        }
+    }
+
+    function openDocument(documentId) {
+        window.location.href = `editor.html?document=${documentId}`
+    }
+
+    function viewDocument(documentItem) {
+        let popupContainer = document.querySelector(".pop-up-container")
+        popupContainer.style.display = "flex";
+
+        let documentTitle = document.querySelector(".pop-up-item__document-title")
+        let documentContent = document.querySelector(".pop-up-item__content")
+        
+        documentTitle.innerHTML = `<p>${documentItem.documentName}</p>`;
+        documentContent.innerHTML = documentItem.documentContent;
+    }
+</script>
+
+</html>
